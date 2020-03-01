@@ -10,14 +10,16 @@ Table of Contents
 <!--ts-->
    * [network-debug-cookbook](#network-debug-cookbook)
    * [Table of Contents](#table-of-contents)
-      * [Overview](#overview)
-      * [tcpdump basics](#tcpdump-basics)
-         * [Basic http request debugging](#basic-http-request-debugging)
       * [tshark (and wireshark)](#tshark-and-wireshark)
          * [look at http request matching a pattern](#look-at-http-request-matching-a-pattern)
+      * [tcpdump basics](#tcpdump-basics)
+         * [Basic http request debugging](#basic-http-request-debugging)
+      * [tcpflow](#tcpflow)
       * [Other resources](#other-resources)
+         * [cheatsheets](#cheatsheets)
+         * [Tutorials](#tutorials)
 
-<!-- Added by: jdagnall, at: Sat Feb 29 19:46:40 PST 2020 -->
+<!-- Added by: jdagnall, at: Sat Feb 29 20:28:23 PST 2020 -->
 
 <!--te-->
 
@@ -64,6 +66,12 @@ Add an input filter to limit what gets captured by destination port:
     # Filter the input to match only destination port 8443
     tshark -O http -Y http.request.uri~health dsp port 8443
 
+
+Dump request bodies to a file. Directory tmpfolder will be created.
+
+  tshark -r dump.pcap --export-objects http,tmpfolder
+
+
 ## tcpdump basics
 
 By default, tcpdump will only pick one interface. Be sure that you know which interface(s) are being
@@ -82,6 +90,24 @@ Write output to a file in pcap format. This can be consumed later.
 
     tcpdump -i lo dst port 8443  
 
+## tcpflow
+
+tcpflow captures tcp streams, and sit somewhere between tcpdump and wireshark. It can take input
+from a pcap file and split the traffic into separate files.
+
+Read traffic from a pcap file and put each stream into a separate file. Each
+http request/response will have its own file:
+
+    tcpflow -r loopback.pcap -e http
+
 ## Other resources
+
+### cheatsheets
+
+* 
+
+### Tutorials
+
+* 
 
 
