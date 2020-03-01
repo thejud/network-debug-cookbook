@@ -39,17 +39,17 @@ start for most things.
 Be sure you know what interfaces are being used. In particular, if you are
 running in a kubernetes environment, be aware of any pod security layers that
 may accept encrypted traffic on one interface and forward unencrypted traffic
-to another.
+to another. You can use `-i any` to capture traffic on all interfaces
 
 ### look at http request matching a pattern
 
 I wanted to look at the raw HTTP requests, and tshark makes that easy.
 
-This command limits to the http protocol, and ensures the request uri matches the (regex) subscribe. 
-It produces brief output.
+This command captures all traffic on the default interface, but filters the
+request uri matches the (regex) "health". It produces brief output.
 
-    # tshark  -Y http.request.uri~health
-    Capturing on 'eth0'
+    # tshark  -i any -Y http.request.uri~health
+    Capturing on 'any'
         7 0.098643771 10.200.103.88 → 10.22.201.225 HTTP 196 GET /healthz/ready HTTP/1.1
        56 2.098765732 10.200.103.88 → 10.22.201.225 HTTP 196 GET /healthz/ready HTTP/1.1
        84 4.098699160 10.200.103.88 → 10.22.201.225 HTTP 196 GET /healthz/ready HTTP/1.1
@@ -59,7 +59,7 @@ It produces brief output.
 
 Add the `-O http` to get the raw request:
 
-    # tshark -O http -Y http.request.uri~health
+    # tshark -i any -O http -Y http.request.uri~health
 
 Add an input filter to limit what gets captured by destination port:
 
@@ -78,17 +78,20 @@ By default, tcpdump will only pick one interface. Be sure that you know which in
 used by your application. In a recent case, in Kubernetes with envoy for security, the public (eth0) interface
 was encrypted, but the loopback interface was unsecured. So I needed to start tcpdump with the `-i lo` option, e.g.
 
-    # bind to the loopback interface
+   # listen on any interface
+   tcpdump -i any
+
+    # listen to the loopback interface
     tcpdump -i lo
     
 
 Write output to a file in pcap format. This can be consumed later.
 
-    tcpdump -w /tmp/out.pcap -i eth0
+    tcpdump -w /tmp/out.pcap -i any
 
 ### Basic http request debugging
 
-    tcpdump -i lo dst port 8443  
+    tcpdump -i any dst port 8443  
 
 ## tcpflow
 
@@ -108,6 +111,6 @@ http request/response will have its own file:
 
 ### Tutorials
 
-* 
+* [https://danielmiessler.com/study/tcpdump/][A tcpdump Tutorial with Examples — 50 Ways to Isolate Traffic]
 
 
