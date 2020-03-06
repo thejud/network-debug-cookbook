@@ -64,7 +64,7 @@ Add the `-O http` to get the raw request:
 Add an input filter to limit what gets captured by destination port:
 
     # Filter the input to match only destination port 8443
-    tshark -O http -Y http.request.uri~health dsp port 8443
+    tshark -O http -Y http.request.uri~health dst port 8443
 
 
 Dump request bodies to a file. Directory tmpfolder will be created.
